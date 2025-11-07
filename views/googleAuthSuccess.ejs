@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Login Successful</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            text-align: center;
+        }
+        h2 {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .key-box {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        code {
+            display: block;
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            overflow-wrap: break-word;
+        }
+        .coins {
+            font-size: 1.2em;
+            color: #FFC107;
+            font-weight: bold;
+        }
+        .referral-code {
+            color: #388E3C;
+            font-weight: bold;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🎉 Google Login සාර්ථකයි!</h2>
+        
+        <p>ස්තූතියි <%= user.email %>! ඔබගේ ගිණුම සාර්ථකව නිර්මාණය කර හෝ ලොග් වී ඇත.
+        ඔබගේ API Key එක සුරකින්න, මෙය ඉදිරි API ඉල්ලීම් සඳහා අවශ්‍ය වේ.</p>
+        
+        <div class="key-box">
+            <p><strong>ඔබගේ API Key එක:</strong></p>
+            <code><%= user.apiKey %></code>
+        </div>
+        
+        <p class="coins">වත්මන් Coin ශේෂය: <%= user.coins %> 🪙</p>
+        
+        <% if (user.referralCode) { %>
+            <p class="referral-code">ඔබගේ Referral Code: <code><%= user.referralCode %></code></p>
+        <% } %>
+
+        <a href="/" class="button">API Documentation වෙත යන්න</a>
+    </div>
+
+</body>
+</html>
