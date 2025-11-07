@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Secure API Base</title>
+    <style>
+        /* CSS Codes for the form */
+        body { font-family: sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); width: 350px; }
+        h2 { color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin-top: 0; text-align: center;}
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn-submit { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; transition: background-color 0.3s; }
+        .btn-submit:hover { background-color: #388E3C; }
+        .google-btn { display: block; background-color: #db4437; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; margin-top: 15px; font-weight: bold; text-align: center; }
+        .google-btn:hover { background-color: #c53929; }
+        .google-btn img { vertical-align: middle; }
+        .switch-link { text-align: center; margin-top: 15px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>🔑 Login</h2>
+        <form action="/api/auth/login" method="POST">
+            <div class="form-group">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" name="email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password:</label>
+                <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn-submit">Login</button>
+        </form>
+
+        <hr style="margin: 20px 0;">
+        
+        <a href="/api/auth/google" class="google-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo-google-icon.png" alt="Google" style="width: 18px; margin-right: 8px;">
+            Google සමඟින් පිවිසෙන්න
+        </a>
+
+        <div class="switch-link">
+            <p>ගිණුමක් නැද්ද? <a href="/signup">ලියාපදිංචි වන්න</a></p>
+        </div>
+        <div class="switch-link">
+            <p><a href="/">API Documentation</a> වෙත යන්න</p>
+        </div>
+    </div>
+
+</body>
+</html>
