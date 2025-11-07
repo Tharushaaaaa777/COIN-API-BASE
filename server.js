@@ -8,6 +8,7 @@ const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('./models/User');
 const { v4: uuidv4 } = require('uuid');
+const requestIp = require('request-ip'); // 💡 request-ip import කරන්න
 
 connectDB();
 const app = express();
@@ -18,6 +19,7 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views'); 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true })); 
+app.use(requestIp.mw()); // 💡 IP middleware එක භාවිත කරන්න
 
 // Passport & Session Setup
 app.use(session({
@@ -38,11 +40,14 @@ passport.use(new GoogleStrategy({
             let user = await User.findOne({ googleId: profile.id });
 
             if (!user) {
+                // Google Sign Up වලදී Device/IP tracking නොමැති බැවින් null ලෙස තබයි
                 user = await User.create({
                     email: email,
                     googleId: profile.id,
                     apiKey: uuidv4(), 
-                    coins: INITIAL_COINS, // Sign Up හිදී Coin 50ක්
+                    coins: INITIAL_COINS, 
+                    deviceId: null,
+                    registrationIp: null,
                 });
             }
             done(null, user);
@@ -65,13 +70,15 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-// EJS Templating Middleware (API Key and Coins)
+// EJS Templating Middleware (API Key, Coins, and Referral Code)
 app.use((req, res, next) => {
     if (req.isAuthenticated() && req.user) {
+        res.locals.user = req.user; // User object එකම EJS වෙත යවන්න
         res.locals.userApiKey = req.user.apiKey; 
         res.locals.userCoins = req.user.coins;
         res.locals.isLoggedIn = true;
     } else {
+        res.locals.user = null;
         res.locals.userApiKey = 'Login to get your key';
         res.locals.userCoins = 0;
         res.locals.isLoggedIn = false;
@@ -79,11 +86,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// API Routes
-app.use('/api/auth', authRoutes); 
-app.use('/api', apiRoutes); 
-
-// Frontend Routes (EJS Views)
+// 💡 Frontend Routes (EJS Views)
 app.get('/', (req, res) => {
     res.render('index', { 
         apiKey: res.locals.userApiKey, 
@@ -95,9 +98,27 @@ app.get('/login', (req, res) => {
     res.render('login'); 
 });
 
-app.get('/signup', (req, res) => {
-    res.render('register');
+// 💡 Referral Endpoint Route
+app.get('/ref/:referralCode', (req, res) => {
+    const refCode = req.params.referralCode;
+    
+    res.render('register', { 
+        initialReferralCode: refCode // Register EJS template එකට code එක යවයි
+    });
 });
+
+// සාමාන්‍ය Sign Up Route එක
+app.get('/signup', (req, res) => {
+    // ref query parameter එකක් තිබේ නම්, එයත් register template එකට යවන්න
+    res.render('register', { 
+        initialReferralCode: req.query.ref || '' 
+    });
+});
+
+
+// API Routes
+app.use('/api/auth', authRoutes); 
+app.use('/api', apiRoutes); 
 
 const PORT = process.env.PORT || 5000;
 
