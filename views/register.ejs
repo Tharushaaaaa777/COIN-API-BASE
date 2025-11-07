@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - Secure API Base</title>
     <style>
-        /* CSS Codes for the form */
         body { font-family: sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .card { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); width: 350px; }
         h2 { color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin-top: 0; text-align: center;}
@@ -32,7 +31,20 @@
                 <label for="reg-password">Password:</label>
                 <input type="password" id="reg-password" name="password" placeholder="Create a strong password" required>
             </div>
-            <button type="submit" class="btn-submit">Sign Up (Get 50 Coins!)</button>
+            <div class="form-group">
+                <label for="referral-code">Referral Code (Optional):</label>
+                <input 
+                    type="text" 
+                    id="referral-code" 
+                    name="referralCode" 
+                    placeholder="Enter referral code"
+                    value="<%= typeof initialReferralCode !== 'undefined' ? initialReferralCode : '' %>"
+                >
+            </div>
+            
+            <input type="hidden" name="deviceId" id="deviceIdInput" value="unknown">
+            
+            <button type="submit" class="btn-submit">Sign Up (Get 50+ Coins!)</button>
         </form>
 
         <hr style="margin: 20px 0;">
@@ -49,6 +61,26 @@
             <p><a href="/">API Documentation</a> වෙත යන්න</p>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@v3/dist/fp.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hiddenInput = document.getElementById('deviceIdInput');
+            
+            if (hiddenInput) {
+                FingerprintJS.load()
+                    .then(fp => fp.get())
+                    .then(result => {
+                        const deviceId = result.visitorId;
+                        hiddenInput.value = deviceId; 
+                        console.log('Generated Device ID:', deviceId);
+                    })
+                    .catch(error => {
+                        console.error('FingerprintJS error:', error);
+                    });
+            }
+        });
+    </script>
 
 </body>
 </html>
