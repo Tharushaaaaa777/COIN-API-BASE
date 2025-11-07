@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <style>
+        :root { --primary-color: #4CAF50; --secondary-color: #388E3C; --background-color: #f4f4f9; --card-background: #ffffff; --text-color: #333; --border-radius: 8px; }
+        body { font-family: sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding: 0;}
+        header { background-color: #4CAF50; color: white; padding: 1.5rem 20px; text-align: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .container { max-width: 900px; margin: 20px auto; padding: 20px; }
+        .card { background-color: #ffffff; padding: 30px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        h2, h3 { color: #388E3C; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin-top: 0; }
+        .endpoint { border: 1px solid #ddd; padding: 15px; margin-top: 15px; border-radius: 8px; background-color: #fafafa; }
+        .endpoint h4 { margin-top: 0; color: #1a73e8; display: flex; align-items: center; }
+        .endpoint-method { background-color: #007bff; color: white; padding: 3px 8px; border-radius: 4px; margin-right: 10px; font-size: 0.9em; }
+        code { background-color: #eee; padding: 2px 4px; border-radius: 4px; font-family: Consolas, monospace; }
+        .note { background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 10px; margin-top: 15px; color: #664d03; border-radius: 4px; }
+        .nav-links { margin-bottom: 20px; }
+        .nav-links a { background-color: #388E3C; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; margin-right: 10px; display: inline-block; transition: background-color 0.3s;}
+        .nav-links a:hover { background-color: #4CAF50; }
+        .coin-balance { background-color: #f0f0ff; border: 1px solid #aaa; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-weight: bold; color: #0056b3;}
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📄 API Documentation</h1>
+        <p>Tharuzz-ofc Secure API Base</p>
+    </header>
+
+    <div class="container">
+
+        <div class="nav-links">
+            <a href="/login">🔑 Login</a>
+            <a href="/signup">📝 Sign Up</a>
+        </div>
+        
+        <div class="card">
+            <h2>API Endpoints</h2>
+            
+            <div class="coin-balance">
+                Current Coin Balance: <span><%= coins %></span> 🪙
+            </div>
+
+            <div class="note">
+                **වැදගත්:** ඔබේ වත්මන් API Key එක: <code><%= apiKey %></code>. සියලුම ආරක්ෂිත Endpoints සඳහා, මෙම Key එක Header එකේ **<code>x-api-key</code>** ලෙස යැවිය යුතුය.
+            </div>
+            
+            <div class="endpoint">
+                <h4><span class="endpoint-method" style="background-color: #28a745;">GET</span> /api/key</h4>
+                <p>ඔබගේ ලියාපදිංචි කළ API Key එක සහ Coin Balance නැවත ලබා ගැනීම. (API Key header එක අවශ්‍යයි)</p>
+                <p>Example Header: <code>x-api-key: <%= apiKey %></code></p>
+            </div>
+
+            <div class="endpoint">
+                <h4><span class="endpoint-method" style="background-color: #007bff;">GET</span> /api/tiktok</h4>
+                <p>TikTok වීඩියෝ URL එකකින් දත්ත ලබා ගැනීම. **(Cost: 5 Coins)**</p>
+                <p>Required Query Parameter: <code>url</code></p>
+                <p>Example Request: <code>GET /api/tiktok?url=https://vm.tiktok.com/ZMxxxxxx/</code></p>
+                <p>Required Header: <code>x-api-key: <%= apiKey %></code></p>
+            </div>
+            
+            <% if (apiKey !== 'Login to get your key') { %>
+            <h3>Admin Route (Owner Only)</h3>
+            <div class="endpoint">
+                <h4><span class="endpoint-method" style="background-color: #dc3545;">POST</span> /api/admin/add-coins</h4>
+                <p>ඕනෑම පරිශීලකයෙකුට Coin එකතු කිරීම. (ඔබේ Owner Email එකට අදාල API Key එක පමණක් භාවිතා කරන්න)</p>
+                <p>Required Body: <code>{ "targetEmail": "user@example.com", "amount": 100 }</code></p>
+                <p>Required Header: <code>x-api-key: <%= apiKey %></code></p>
+            </div>
+            <% } %>
+
+            <h3>Authentication Routes</h3>
+            <div class="endpoint">
+                <h4><span class="endpoint-method" style="background-color: #ffc107; color: #333;">POST</span> /api/auth/register</h4>
+                <p>නව පරිශීලකයෙකු ලියාපදිංචි කිරීම. (Body: <code>email</code>, <code>password</code>) - **Get 50 Coins!**</p>
+            </div>
+            <div class="endpoint">
+                <h4><span class="endpoint-method" style="background-color: #ffc107; color: #333;">POST</span> /api/auth/login</h4>
+                <p>පවතින පරිශීලකයෙකු Login කිරීම. (Body: <code>email</code>, <code>password</code>)</p>
+            </div>
+            <div class="endpoint">
+                <h4><span class="endpoint-method" style="background-color: #ffc107; color: #333;">GET</span> /api/auth/google</h4>
+                <p>Google OAuth හරහා පිවිසීම/ලියාපදිංචිය.</p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
