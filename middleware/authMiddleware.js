@@ -3,26 +3,33 @@ const User = require('../models/User');
 const protect = async (req, res, next) => {
     let apiKey;
 
-    if (req.headers['x-api-key']) {
-        apiKey = req.headers['x-api-key'];
+    // 💡 1. Query Parameter එක පරීක්ෂා කිරීම (?x-api-key=...)
+    if (req.query && req.query['api-key']) {
+        apiKey = req.query['api-key'];
+    } 
+    // 2. Authorization Header එක පරීක්ෂා කිරීම (Bearer <Key>)
+    else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        apiKey = req.headers.authorization.split(' ')[1];
     }
 
     if (!apiKey) {
-        return res.status(401).json({ success: false, message: 'Not authorized, API Key is missing' });
+        return res.status(401).json({ success: false, message: 'Not authorized. API Key is missing or invalid.' });
     }
 
     try {
-        const user = await User.findOne({ apiKey });
+        // API Key එක Database එකේ පරිශීලකයෙකුට අයත් දැයි පරීක්ෂා කිරීම
+        const user = await User.findOne({ apiKey }).select('-password');
 
-        if (user) {
-            req.user = user; 
-            next();
-        } else {
-            res.status(401).json({ success: false, message: 'Not authorized, invalid API Key' });
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Not authorized. Invalid API Key.' });
         }
+
+        req.user = user;
+        next();
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Server error during API Key validation' });
+        // DB සම්බන්ධතා හෝ අනෙකුත් අභ්‍යන්තර දෝෂ හසුරුවයි
+        res.status(500).json({ success: false, message: 'Server error during authentication.' });
     }
 };
 
