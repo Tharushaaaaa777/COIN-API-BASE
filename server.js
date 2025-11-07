@@ -1,3 +1,5 @@
+// server.js
+
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
@@ -8,7 +10,7 @@ const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('./models/User');
 const { v4: uuidv4 } = require('uuid');
-const requestIp = require('request-ip'); // 💡 request-ip import කරන්න
+const requestIp = require('request-ip'); 
 
 connectDB();
 const app = express();
@@ -19,7 +21,7 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views'); 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true })); 
-app.use(requestIp.mw()); // 💡 IP middleware එක භාවිත කරන්න
+app.use(requestIp.mw()); 
 
 // Passport & Session Setup
 app.use(session({
@@ -40,7 +42,6 @@ passport.use(new GoogleStrategy({
             let user = await User.findOne({ googleId: profile.id });
 
             if (!user) {
-                // Google Sign Up වලදී Device/IP tracking නොමැති බැවින් null ලෙස තබයි
                 user = await User.create({
                     email: email,
                     googleId: profile.id,
@@ -70,10 +71,10 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-// EJS Templating Middleware (API Key, Coins, and Referral Code)
+// EJS Templating Middleware
 app.use((req, res, next) => {
     if (req.isAuthenticated() && req.user) {
-        res.locals.user = req.user; // User object එකම EJS වෙත යවන්න
+        res.locals.user = req.user;
         res.locals.userApiKey = req.user.apiKey; 
         res.locals.userCoins = req.user.coins;
         res.locals.isLoggedIn = true;
@@ -86,7 +87,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// 💡 Frontend Routes (EJS Views)
+// Frontend Routes (EJS Views)
 app.get('/', (req, res) => {
     res.render('index', { 
         apiKey: res.locals.userApiKey, 
@@ -98,22 +99,31 @@ app.get('/login', (req, res) => {
     res.render('login'); 
 });
 
-// 💡 Referral Endpoint Route
 app.get('/ref/:referralCode', (req, res) => {
     const refCode = req.params.referralCode;
     
     res.render('register', { 
-        initialReferralCode: refCode // Register EJS template එකට code එක යවයි
+        initialReferralCode: refCode
     });
 });
 
-// සාමාන්‍ය Sign Up Route එක
 app.get('/signup', (req, res) => {
-    // ref query parameter එකක් තිබේ නම්, එයත් register template එකට යවන්න
     res.render('register', { 
         initialReferralCode: req.query.ref || '' 
     });
 });
+
+// 💡 Google Auth Routes
+app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// 💡 Google Callback Logic යාවත්කාලීන කර ඇත
+app.get('/api/auth/google/callback', 
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+        // Successful authentication, redirect to success page.
+        res.redirect('/api/auth/google/success'); 
+    }
+);
 
 
 // API Routes
