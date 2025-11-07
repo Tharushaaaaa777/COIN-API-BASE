@@ -1,19 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const { registerUser, authUser, googleAuthSuccess } = require('../controllers/authController');
+const { registerUser, authUser } = require('../controllers/authController');
 
+// Standard Auth Routes
 router.post('/register', registerUser);
 router.post('/login', authUser);
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+// 💡 Google Auth Success Route (EJS View එක පෙන්වයි)
+router.get('/google/success', (req, res) => {
+    // පරිශීලකයා ලොග් වී ඇත්දැයි පරීක්ෂා කිරීම
+    if (req.isAuthenticated() && req.user) {
+        // googleAuthSuccess.ejs ගොනුව Render කිරීම
+        res.render('googleAuthSuccess', {
+            user: req.user 
+        });
+    } else {
+        // ලොග් වී නොමැති නම්, Login පිටුවට Redirect කිරීම
+        res.redirect('/login');
+    }
+});
 
-router.get('/google/callback', 
-    passport.authenticate('google', { 
-        failureRedirect: '/login',
-        session: true 
-    }),
-    googleAuthSuccess
-);
+// Google Authentication (Routes are now in server.js)
+// Google Auth Success Handler (used for JSON API response, but not for this EJS view)
+// router.get('/google/success', googleAuthSuccess); 
 
 module.exports = router;
