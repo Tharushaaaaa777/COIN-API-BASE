@@ -1,40 +1,55 @@
+// controllers/adminController.js
+
 const User = require('../models/User');
-const OWNER_EMAIL = process.env.OWNER_EMAIL; 
 
-// Coin එකතු කිරීමේ ක්‍රියාවලිය
-const addCoins = async (req, res) => {
-    // 1. Security Check: ඉල්ලීම කරන්නේ Owner ට පමණක්දැයි පරීක්ෂා කරන්න
-    if (req.user.email !== OWNER_EMAIL) {
-        return res.status(403).json({ success: false, message: 'Forbidden: Owner access only.' });
+const sendCoins = async (req, res) => {
+    // Owner ගේ විස්තර req.user වලින් ලැබේ (Owner Middleware විසින් තහවුරු කර ඇත)
+    const owner = req.user; 
+    
+    // Request Body එකෙන් අවශ්‍ය දත්ත ලබා ගැනීම
+    const { receiverEmail, amount } = req.body;
+
+    // 1. Inputs වලංගු දැයි පරීක්ෂා කිරීම (ධන පූර්ණ සංඛ්‍යාවක් විය යුතුය)
+    if (!receiverEmail || !amount || amount <= 0 || !Number.isInteger(amount)) {
+        return res.status(400).json({ success: false, message: 'Invalid receiver email or amount (must be a positive integer).' });
     }
 
-    const { targetEmail, amount } = req.body;
-
-    if (!targetEmail || !amount || typeof amount !== 'number' || amount <= 0) {
-        return res.status(400).json({ success: false, message: 'Invalid targetEmail or amount. Amount must be a positive number.' });
+    // 2. ලබන්නා DB එකේ සිටී දැයි සොයා ගැනීම
+    const receiver = await User.findOne({ email: receiverEmail });
+    
+    if (!receiver) {
+        return res.status(404).json({ success: false, message: `User with email ${receiverEmail} not found.` });
     }
+    
+    // 3. තමන්ටම Coins යැවීම වැළැක්වීම
+    if (owner.email === receiverEmail) {
+        return res.status(400).json({ success: false, message: "Cannot send coins to yourself using this endpoint." });
+    }
+
 
     try {
-        const targetUser = await User.findOne({ email: targetEmail });
-
-        if (!targetUser) {
-            return res.status(404).json({ success: false, message: 'Target user not found.' });
+        // 4. ලබන්නාගේ Coins ප්‍රමාණය වැඩි කිරීම
+        const receiverUpdateResult = await User.findOneAndUpdate(
+            { email: receiverEmail },
+            { $inc: { coins: amount } }, // $inc මඟින් වත්මන් අගයට එකතු කරයි
+            { new: true } // යාවත්කාලීන කළ Document එක ආපසු ලබා ගැනීමට
+        );
+        
+        if (receiverUpdateResult) {
+            res.json({
+                success: true,
+                message: `${amount} coins successfully transferred to ${receiverEmail}.`,
+                ownerEmail: owner.email,
+                receiverNewBalance: receiverUpdateResult.coins,
+            });
+        } else {
+            throw new Error("Failed to update receiver's coins.");
         }
 
-        // 2. Coin එකතු කිරීම
-        targetUser.coins += amount;
-        await targetUser.save();
-
-        res.json({
-            success: true,
-            message: `${amount} coins added to ${targetEmail}.`,
-            new_coin_balance: targetUser.coins,
-        });
-
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Server error while updating coins.' });
+        console.error('Coin Send Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error during coin transfer.' });
     }
 };
 
-module.exports = { addCoins };
+module.exports = { sendCoins };
