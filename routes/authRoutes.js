@@ -1,28 +1,34 @@
+// routes/authRoutes.js (අවසාන කොටස යාවත්කාලීන කර ඇත)
+
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const { registerUser, authUser } = require('../controllers/authController');
+const { authorizeOwner } = require('../middleware/ownerMiddleware');
+const { protect } = require('../middleware/authMiddleware'); 
 
 // Standard Auth Routes
 router.post('/register', registerUser);
 router.post('/login', authUser);
 
-// 💡 Google Auth Success Route (EJS View එක පෙන්වයි)
+// Google Auth Success Route
 router.get('/google/success', (req, res) => {
-    // පරිශීලකයා ලොග් වී ඇත්දැයි පරීක්ෂා කිරීම
     if (req.isAuthenticated() && req.user) {
-        // googleAuthSuccess.ejs ගොනුව Render කිරීම
         res.render('googleAuthSuccess', {
             user: req.user 
         });
     } else {
-        // ලොග් වී නොමැති නම්, Login පිටුවට Redirect කිරීම
         res.redirect('/login');
     }
 });
 
-// Google Authentication (Routes are now in server.js)
-// Google Auth Success Handler (used for JSON API response, but not for this EJS view)
-// router.get('/google/success', googleAuthSuccess); 
+// 💡 ADMIN PANEL FRONTEND ROUTE
+// 1. protect: පරිශීලකයා ලොග් වී ඇත්දැයි පරීක්ෂා කරයි
+// 2. authorizeOwner: ලොග් වී ඇත්තේ Owner දැයි පරීක්ෂා කරයි
+router.get('/admin/send', protect, authorizeOwner, (req, res) => {
+    // Owner successfully passed both checks
+    res.render('adminPanel', { user: req.user });
+});
+
 
 module.exports = router;
