@@ -3,7 +3,7 @@
 const User = require('../models/User');
 
 const sendCoins = async (req, res) => {
-    // Owner ගේ විස්තර req.user වලින් ලැබේ (Owner Middleware විසින් තහවුරු කර ඇත)
+    // Owner ගේ විස්තර req.user වලින් ලැබේ
     const owner = req.user; 
     
     // Request Body එකෙන් අවශ්‍ය දත්ත ලබා ගැනීම
@@ -31,8 +31,8 @@ const sendCoins = async (req, res) => {
         // 4. ලබන්නාගේ Coins ප්‍රමාණය වැඩි කිරීම
         const receiverUpdateResult = await User.findOneAndUpdate(
             { email: receiverEmail },
-            { $inc: { coins: amount } }, // $inc මඟින් වත්මන් අගයට එකතු කරයි
-            { new: true } // යාවත්කාලීන කළ Document එක ආපසු ලබා ගැනීමට
+            { $inc: { coins: amount } }, 
+            { new: true } 
         );
         
         if (receiverUpdateResult) {
