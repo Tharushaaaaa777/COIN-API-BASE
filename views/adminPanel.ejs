@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Admin Panel - Send Coins</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f8ff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); width: 400px; }
+        h2 { color: #8A2BE2; border-bottom: 3px solid #8A2BE2; padding-bottom: 10px; margin-top: 0; text-align: center; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .form-group input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn-submit { background-color: #8A2BE2; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; transition: background-color 0.3s; }
+        .btn-submit:hover { background-color: #6A1B9A; }
+        .status-message { margin-top: 20px; padding: 15px; border-radius: 5px; font-weight: bold; }
+        .success { background-color: #e6ffe6; color: #4CAF50; border: 1px solid #4CAF50; }
+        .error { background-color: #ffe6e6; color: #f44336; border: 1px solid #f44336; }
+        .owner-info { text-align: center; margin-bottom: 25px; padding: 10px; background-color: #fff0f5; border-radius: 5px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>👑 Owner Coin Send Panel</h2>
+        
+        <div class="owner-info">
+            ඔබ ලොග් වී ඇත්තේ: <strong><%= user.email %></strong>
+        </div>
+
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+        <form id="sendCoinsForm">
+            <div class="form-group">
+                <label for="receiverEmail">ලබන්නාගේ Email:</label>
+                <input type="email" id="receiverEmail" name="receiverEmail" placeholder="user@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="amount">යවන Coins ප්‍රමාණය:</label>
+                <input type="number" id="amount" name="amount" placeholder="Coins ගණන" min="1" required>
+            </div>
+            
+            <input type="hidden" id="apiKey" value="<%= user.apiKey %>">
+            
+            <button type="submit" class="btn-submit">Coins යවන්න</button>
+        </form>
+
+    </div>
+
+    <script>
+        document.getElementById('sendCoinsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const receiverEmail = document.getElementById('receiverEmail').value;
+            const amount = parseInt(document.getElementById('amount').value);
+            const apiKey = document.getElementById('apiKey').value;
+            const statusMessage = document.getElementById('statusMessage');
+
+            statusMessage.style.display = 'none';
+            statusMessage.className = 'status-message';
+            
+            if (amount <= 0 || !Number.isInteger(amount)) {
+                statusMessage.textContent = 'Error: Amount must be a positive whole number.';
+                statusMessage.classList.add('error');
+                statusMessage.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/sendcoins', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Owner ගේ API Key එක Authorization Header එකට යවයි
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({ receiverEmail, amount })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusMessage.textContent = `SUCCESS: ${data.message} | නව ශේෂය: ${data.receiverNewBalance} 🪙`;
+                    statusMessage.classList.add('success');
+                    // Form එක හිස් කිරීම
+                    document.getElementById('receiverEmail').value = '';
+                    document.getElementById('amount').value = '';
+                } else {
+                    // API Call එක අසාර්ථක වූ විට (400, 403, 404, 500)
+                    statusMessage.textContent = `ERROR: ${data.message || 'Coin sending failed. Check console for details.'}`;
+                    statusMessage.classList.add('error');
+                }
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                statusMessage.textContent = 'FATAL ERROR: Could not connect to the server.';
+                statusMessage.classList.add('error');
+            }
+            
+            statusMessage.style.display = 'block';
+        });
+    </script>
+
+</body>
+</html>
