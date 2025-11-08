@@ -3,52 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Documentation - Secure API Base</title>
+    <title>API Documentation - Tharusha APIS (Blue Theme)</title>
     <style>
-        /* ... (CSS Styles) ... */
-        .coin-balance { background-color: #f0f0ff; border: 1px solid #aaa; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-weight: bold; color: #0056b3;}
-        .referral-info { background-color: #e6ffed; border-left: 5px solid #4CAF50; padding: 10px; margin-top: 15px; color: #388E3C; border-radius: 4px; }
+        /* General Setup (Blue Dark Theme) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0d1a26;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header and Navigation (Unchanged) */
+        header {
+            width: 100%;
+            background-color: #1a2b3c;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            padding: 15px 0;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4dd0e1;
+            margin: 0;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+        h1 span { margin-left: 10px; font-family: monospace; }
+        .logo-icon { color: #4dd0e1; font-size: 1.2em; }
+        .logout-btn {
+            background-color: #ff6f00;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .logout-btn:hover { background-color: #e65100; }
+        .header-title {
+            color: #b3e5fc;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 400;
+        }
+
+        /* Main Container and Cards (Unchanged) */
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            padding: 20px 0;
+        }
+        .section-card {
+            background-color: #1a2b3c;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+        .info-bar {
+            background-color: #273e51;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4dd0e1;
+        }
+        .info-bar p { margin: 5px 0; font-size: 0.95em; }
+        .info-bar strong { color: #ffeb3b; }
+        /* Referral Info */
+        .referral-info {
+            background-color: #1e3a24;
+            border-left: 5px solid #4CAF50;
+            padding: 15px;
+            margin-top: 15px;
+            color: #a3e9a4;
+            border-radius: 6px;
+        }
+        .referral-info a { color: #90ee90; }
+
+        /* Endpoints Section */
+        h3 {
+            color: #e0e0e0;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #334e68;
+        }
+        .endpoint-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .endpoint-card {
+            background-color: #273e51;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #334e68;
+            transition: border-color 0.2s;
+        }
+        .endpoint-card:hover { border-color: #4dd0e1; }
+        .endpoint-method {
+            background-color: #4dd0e1;
+            color: #1a2b3c;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8em;
+            margin-right: 10px;
+            text-transform: uppercase;
+        }
+        .endpoint-method.post-color { background-color: #ff6f00; color: #1a2b3c; }
+        .endpoint-path {
+            color: #ffffff;
+            font-family: monospace;
+            font-size: 1em;
+            word-break: break-all;
+        }
+        .endpoint-desc { color: #b3b3b3; margin-top: 5px; font-size: 0.9em; }
+        .required-param { color: #ff9800; font-size: 0.85em; margin-top: 5px; }
+        .alert-info {
+            background-color: #424200;
+            color: #ffeb3b;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 5px solid #ff9800;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .action-button {
+            float: right;
+            background-color: #4dd0e1;
+            color: #121212;
+            padding: 5px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+        .action-button:hover { background-color: #26a69a; }
+
+        /* Tabbed Interface and Copy Feature CSS */
+        .tab-container {
+            margin: 20px 0;
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #334e68;
+        }
+        .tab-button {
+            flex-grow: 1;
+            padding: 15px 0;
+            text-align: center;
+            background-color: #1a2b3c;
+            color: #b3cde0;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 600;
+            border-right: 1px solid #334e68;
+        }
+        .tab-button:last-child { border-right: none; }
+        .tab-button.active {
+            background-color: #273e51;
+            color: #4dd0e1;
+        }
+        .tab-content {
+            padding: 25px;
+        }
+        .content-box {
+            display: none;
+        }
+        .content-box.active {
+            display: block;
+        }
+        
+        /* Copy Interface Style */
+        .copy-interface {
+            display: flex;
+            align-items: center;
+            background-color: #121d27;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #334e68;
+        }
+        .copy-interface code {
+            flex-grow: 1;
+            padding: 12px;
+            color: #ffffff;
+            font-family: monospace;
+            font-size: 0.95em;
+            word-break: break-all;
+        }
+        .copy-btn {
+            background-color: #ff6f00; /* Orange Button */
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+        .copy-btn:hover {
+            background-color: #e65100;
+        }
+        .copy-btn.copied {
+            background-color: #4CAF50; /* Green when copied */
+        }
+        
+        .footer-api {
+            text-align: center;
+            letter-spacing: 0.2rem;
+            font-size: 0.8rem;
+            padding: 20px 0;
+            color: #4dd0e1;
+        }
+        
+        
     </style>
 </head>
 <body>
 
     <header>
-        <h1>📄 API Documentation</h1>
-        <p>Tharuzz-ofc Secure API Base</p>
+        <div class="header-content">
+            <h1><span class="logo-icon">&lt;/&gt;</span><span>tharusha APIs</span></h1>
+            <% if (isLoggedIn) { %>
+                <a href="/logout" class="logout-btn">🔑 Logout</a>
+            <% } else { %>
+                <a href="/login" class="logout-btn" style="background-color:#007bff;">🔑 Login</a>
+            <% } %>
+        </div>
     </header>
 
     <div class="container">
+        
+        <h1 class="header-title">Hellow buddy welcome to tharusha API site</h1>
+        
+        <div class="section-card">
+            <div class="info-bar">
+                <p>Status: <strong><%= isLoggedIn ? 'Logged In' : 'Logged Out' %></strong></p>
+                <p>Current Coin Balance: <strong><%= userCoins %></strong> 🪙</p>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <div id="btnApiKey" class="tab-button" onclick="openTab(event, 'apiKeyTab')">🔑 API Key</div>
+                    <% if (user && user.referralCode) { %>
+                        <div id="btnReferral" class="tab-button" onclick="openTab(event, 'referralTab')">🔗 Referral Link</div>
+                    <% } %>
+                </div>
 
-        <div class="nav-links">
-            <a href="/login">🔑 Login</a>
-            <a href="/signup">📝 Sign Up</a>
+                <div class="tab-content">
+                    
+                    <div id="apiKeyTab" class="content-box">
+                        <p>API ඉල්ලීම් සඳහා මෙම යතුර භාවිතා කරන්න (API request to use this api key):</p>
+                        <div class="copy-interface">
+                            <code id="apiKeyText"><%= userApiKey %></code>
+                            <button class="copy-btn" onclick="copyToClipboard('apiKeyText', this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <% if (user && user.referralCode) { %>
+                    <div id="referralTab" class="content-box">
+                        <p>Refer friends and win 50 coins 🤩</p>
+                        <div class="copy-interface">
+                            <% 
+                                // 💡 Dynamically construct the URL using the request host and protocol for correctness
+                                const referralHost = req.protocol + '://' + req.get('host');
+                                const referralUrl = referralHost + '/ref/' + user.referralCode;
+                            %>
+                            <code id="referralLinkText"><%= referralUrl %></code>
+                            <button class="copy-btn" onclick="copyToClipboard('referralLinkText', this)">Copy</button>
+                        </div>
+                        <div class="referral-info">
+                             Your referral code: <code><%= user.referralCode %></code>.
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+            </div>
+        
+        <div class="section-card">
+            <h3>Available API Endpoints:</h3>
+            
+            <div class="alert-info">
+                ⚠️ Quick Test: Add the API Key to your URL as `&api-key=<%= userApiKey %>` (or use Authorization Header).
+            </div>
+
+            <div class="endpoint-list">
+                
+                <% 
+                    // 💡 Constructing the Quick Test URL correctly
+                    const quickTestHost = req.protocol + '://' + req.get('host');
+                    const ttLink = quickTestHost + `/api/tiktok?url=ENTER_TIK_TOK_VIDEO_URL&api-key=${userApiKey}`;
+                %>
+                
+                <div class="endpoint-card">
+                    <a href="<%= ttLink %>" class="action-button" target="_blank">Quick Test (GET)</a>
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-path">/api/tiktok?url=...</span>
+                    <p class="endpoint-desc">Download TikTok video data (Coin Cost: 5)</p>
+                    <p class="required-param">Required Query Parameter: **url** (TikTok URL)</p>
+                </div>
+
+                <% if (isLoggedIn && user.email === process.env.OWNER_EMAIL) { %>
+                <div class="endpoint-card">
+                    <a href="/api/auth/admin/send" class="action-button" style="background-color: #ff6f00;">👑 Admin Panel</a>
+                    <span class="endpoint-method post-color">POST</span>
+                    <span class="endpoint-path">/api/admin/sendcoins</span>
+                    <p class="endpoint-desc">OWNER ONLY: Send coins to any user email.</p>
+                    <p class="required-param">Required JSON Body: **receiverEmail**, **amount**</p>
+                </div>
+                <% } %>
+                
+                <div class="endpoint-card">
+                    <a href="/api/key" class="action-button" target="_blank">Quick Test (GET)</a>
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-path">/api/key</span>
+                    <p class="endpoint-desc">Get your current API Key and Coin balance.</p>
+                    <p class="required-param">Required Header: **Authorization: Bearer <Key>**</p>
+                </div>
+                
+                <div class="endpoint-card">
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-path">/api/v1/download/youtube/mp3?q=...</span>
+                    <p class="endpoint-desc">Download a YouTube MP3.</p>
+                    <p class="required-param">Required Query Parameter: **q** (YouTube URL)</p>
+                </div>
+                
+            </div>
         </div>
         
-        <div class="card">
-            <h2>API Endpoints</h2>
-            
-            <div class="coin-balance">
-                Current Coin Balance: <span><%= userCoins %></span> 🪙
-            </div>
-            
-            <% if (user && user.referralCode) { %>
-            <div class="referral-info">
-                **ඔබේ Referral Code එක:** <code><%= user.referralCode %></code>.
-                <br>
-                **යොමු කිරීමේ සබැඳිය:** <a href="/ref/<%= user.referralCode %>">
-                    <code>/ref/<%= user.referralCode %></code>
-                </a>
-                <br>
-                නව පරිශීලකයෙක් ලියාපදිංචි වන සෑම විටම Coin 50 ක් දිනා ගන්න!
-            </div>
-            <% } %>
-
-            <div class="note">
-                **වැදගත්:** ඔබේ වත්මන් API Key එක: <code><%= userApiKey %></code>.
-            </div>
-            
-            </div>
+        <footer class="footer-api">
+            <p>&COPY; Tharusha Sandipa All Rights Reserved</p>
+        </footer>
+        
     </div>
+
+    <script>
+        // 1. Tab Switching Functionality
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName("content-box");
+            const tabButtons = document.getElementsByClassName("tab-button");
+
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            document.getElementById(tabName).classList.add('active');
+            // Check if evt is defined (it's undefined if called from window.onload)
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add('active');
+            } else {
+                // If called from load, find the button element using the tabName
+                const buttonId = 'btn' + tabName.charAt(0).toUpperCase() + tabName.slice(1).replace('Tab', '');
+                const button = document.getElementById(buttonId);
+                if(button) {
+                    button.classList.add('active');
+                }
+            }
+        }
+        
+        // 💡 NEW: Initialize first tab on page load
+        window.onload = function() {
+            // Check if the API Key tab exists and open it by default
+            if (document.getElementById('apiKeyTab')) {
+                // Pass null for event and the tab name
+                openTab(null, 'apiKeyTab');
+            }
+        };
+
+        // 2. Copy to Clipboard Functionality
+        function copyToClipboard(elementId, buttonElement) {
+            const copyText = document.getElementById(elementId).textContent;
+            
+            navigator.clipboard.writeText(copyText).then(() => {
+                const originalText = buttonElement.textContent;
+                buttonElement.textContent = 'Copied!';
+                buttonElement.classList.add('copied');
+
+                setTimeout(() => {
+                    buttonElement.textContent = originalText;
+                    buttonElement.classList.remove('copied');
+                }, 1500);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+                alert('Copy failed! Please manually copy the text.');
+            });
+        }
+    </script>
 
 </body>
 </html>
