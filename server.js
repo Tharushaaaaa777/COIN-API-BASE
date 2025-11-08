@@ -1,18 +1,18 @@
-// server.js (අවසාන API Route කොටස)
+// server.js (අවසාන API Route කොටස යාවත්කාලීන කර ඇත)
 
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const apiRoutes = require('./routes/apiRoutes');
+// 💡 නව adminRoutes එක ආනයනය කරන්න
+const adminRoutes = require('./routes/adminRoutes'); 
 const passport = require('passport');
 const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('./models/User');
 const { v4: uuidv4 } = require('uuid');
 const requestIp = require('request-ip'); 
-// 💡 නව Admin Route එක ආනයනය කරන්න
-const adminRoutes = require('./routes/adminRoutes'); 
 
 connectDB();
 const app = express();
