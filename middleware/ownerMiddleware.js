@@ -1,6 +1,5 @@
 // middleware/ownerMiddleware.js
 
-// protect middleware එකෙන් පසුව req.user හි පරිශීලකයාගේ දත්ත ලැබෙනු ඇත.
 const authorizeOwner = (req, res, next) => {
     // .env වෙතින් ownerEmail එක ලබා ගනී
     const ownerEmail = process.env.OWNER_EMAIL; 
