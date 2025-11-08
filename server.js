@@ -1,4 +1,4 @@
-// server.js
+// server.js (අවසාන API Route කොටස)
 
 require('dotenv').config();
 const express = require('express');
@@ -11,6 +11,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('./models/User');
 const { v4: uuidv4 } = require('uuid');
 const requestIp = require('request-ip'); 
+// 💡 නව Admin Route එක ආනයනය කරන්න
+const adminRoutes = require('./routes/adminRoutes'); 
 
 connectDB();
 const app = express();
@@ -113,14 +115,12 @@ app.get('/signup', (req, res) => {
     });
 });
 
-// 💡 Google Auth Routes
+// Google Auth Routes
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// 💡 Google Callback Logic යාවත්කාලීන කර ඇත
 app.get('/api/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
-        // Successful authentication, redirect to success page.
         res.redirect('/api/auth/google/success'); 
     }
 );
@@ -129,6 +129,9 @@ app.get('/api/auth/google/callback',
 // API Routes
 app.use('/api/auth', authRoutes); 
 app.use('/api', apiRoutes); 
+
+// 💡 Admin Routes එකතු කිරීම
+app.use('/api/admin', adminRoutes); 
 
 const PORT = process.env.PORT || 5000;
 
